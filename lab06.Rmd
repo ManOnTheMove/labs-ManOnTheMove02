@@ -1,0 +1,132 @@
+---
+title: "Lab 06 - Classification Trees"
+author: '[your name here]'
+date: "`r Sys.Date()`"
+---
+
+This week, we will fit a classification tree on the `penguins` data
+set used last week.  We'll continue to
+use only two of the predictors: `bill_length_mm` and `flipper_length_mm`.
+
+```{r data-processing, message=FALSE, warning=FALSE}
+library(tidyverse)
+data("penguins", package = "palmerpenguins")
+penguins <- penguins |> 
+  dplyr::select(species, bill_length_mm, flipper_length_mm)
+```
+
+
+# Questions
+
+A classification tree separates the feature space into
+(axis-parallel) regions, where the optimal split at each step is
+chosen to minimize a measure of homogeneity (Gini index or deviance).
+The majority class in each region is the predicted value.
+
+We use the `rpart` function in the package of the same name to fit a
+classification tree. Use the control setting
+`myc <- rpart.control(minsplit = 3,cp = 1e-8)` and fit the tree using the
+following:
+
+```{r}
+library(rpart)
+myc <- rpart.control(minsplit = 3, cp = .005)
+set.seed(800)
+```
+
+::: {.solbox data-latex=""}
+
+```{r setup-sol, error=TRUE}
+treeobj <- rpart(___, data = penguins, method = 'class', control = myc)
+```
+:::
+
+The `control` parameter tells the function to use the settings given by
+`myc`, and `method = 'class'` specifies a classification (not regression)
+tree. The "`___`" part (model formula) is for you to fill in.
+
+**Q1**
+Use the `plot` and `text` functions to draw the fitted
+tree with labels. How many terminal nodes are there?
+
+::: {.solbox data-latex=""}
+```{r q1-sol}
+
+# some code
+
+```
+
+(some text)
+:::
+
+
+**Q2**
+Which **[terminal]** node(s) with at least 10 are the most
+homogeneous, i.e., having the most even split between the two
+species? Write down the corresponding region of the feature space
+and the number of observations in each class within this region.
+
+::: {.solbox data-latex=""}
+
+(some text)
+
+:::
+
+**Q3**
+Suppose we have two new observations: $\boldsymbol{x}_{1}$ with `flipper = 173`, 
+`bill = 43` and $\boldsymbol{x}_{2}$ with `flipper = 196` and `bill = 51`.
+What are the predicted species based on this fitted tree?
+
+::: {.solbox data-latex=""}
+```{r q3-sol}
+
+# some code
+
+```
+:::
+
+**Q4**
+
+Is the misclassification rate (i.e., the proportion of
+observations wrongly classified) a good measure of the predictive
+ability of this tree? Why or why not?
+
+::: {.solbox data-latex=""}
+
+(some text)
+
+:::
+
+
+
+**Q5**
+Find the observations that are misclassified by this
+tree. What is the misclassification rate?
+    
+**Hint**: Use `predict` with appropriate arguments to obtain the
+fitted classes and compare them with the observed response.
+
+
+::: {.solbox data-latex=""}
+```{r q5-sol}
+
+# some code
+
+```
+
+(some text)
+:::
+
+**Q6**
+The `printcp()` function displays the cross-validated
+error rates (refer to the `xerror` and `xstd` column of the output). Based on
+the result, do you think a simpler tree (with fewer splits) may be
+more useful for prediction? Why?
+
+::: {.solbox data-latex=""}
+```{r q6-sol}
+# some code
+```
+
+(some text)
+:::

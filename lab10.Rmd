@@ -1,0 +1,128 @@
+---
+title: "Lab 10 - Hierarchical clustering"
+author: '[your name here]'
+date: "`r Sys.Date()`"
+---
+
+
+# Brief description
+
+
+In this lab, we will continue the discussion of clustering algorithms by
+applying hierarchical clustering to a gene expression data set.
+
+# Questions
+
+
+Unsupervised techniques are often used in the analysis of genomic data.
+In particular, hierarchical clustering is a popular popular tool. We
+illustrate this technique on the `NCI60` cancer cell line microarray
+data, which consists of 6,830 gene expression measurements on 64 cancer
+cell lines.
+
+
+Each cell line is labeled with a cancer type. We do not make use of the
+cancer types in performing hierarchical clustering, as this is an
+unsupervised technique. But after performing hierarchical clustering, we
+will check to see the extent to which these cancer types agree with the
+results of this unsupervised technique. In other words, the type is
+used for validation of the quality of the clustering, something that
+would not typically be available in this context.
+
+
+We will perform hierarchical clustering of the observations using
+complete, average, and single linkage. Euclidean distance is used as the
+dissimilarity measure. Note that the linkage criterion in hierarchical
+clustering determines the distance between sets of observations as a
+function of the pairwise distances between observations. The linkage
+criteria between two sets of observations $A$ and $B$ used for each
+method is:
+
+1.  Complete-linkage clustering: $\max\{d(a,b): a\in A, b \in B\}$
+
+2.  Average-linkage clustering:
+    $\frac{1}{|A||B|} \sum_{a \in A} \sum_{b\in B} d(a,b)$
+
+3.  Single-linkage clustering: $\min\{d(a,b): a\in A, b \in B\}$
+
+
+Load the library `ISLR2` in `R`, and then use the following commands to
+store the gene expressions and the cancer type of each cell:
+
+```{r, warning=FALSE, message=FALSE}
+library(ISLR2)
+library(tidyverse)
+theme_set(theme_bw())
+nci_labs <- NCI60$labs 
+nci_data <- scale(NCI60$data, center = TRUE, scale = TRUE)
+```
+
+Note that we make sure to standardize the variables to have mean zero 
+and standard deviation one.
+
+**Q1** We now proceed to hierarchically cluster the cell lines
+in the `NCI60` data, with the goal of finding out whether or not the
+observations cluster into distinct types of cancer. Using the
+`hclust` function, plot the dendrogram for complete-linkage,
+average-linkage and single-linkage. Does the choice of linkage
+affect the results obtained?
+
+::: {.solbox data-latex=""}
+```{r q1-sol}
+
+# some code
+
+```
+
+(some text)
+
+:::
+
+
+**Q2** Which linkage method(s) tends to yield less balanced
+dendogram. By less balanced, we mean a dendogram in which cancers of
+the same type are not grouped as often together.
+
+::: {.solbox data-latex=""}
+
+(some text)
+
+:::
+
+**Q3** We can cut the dendrogram at the height that will yield
+a particular number of clusters. Using the `cutree()` function, cut
+the number of clusters to four. For the `LEUKEMIA` cancer type,
+which linkage method(s) cluster all 6 observations into a single
+group? (Include your code but hide the output.)
+
+::: {.solbox data-latex=""}
+```{r q3-sol, eval=FALSE, echo=TRUE}
+
+# some code
+
+```
+
+(some text)
+:::
+
+**Q4** We will investigate whether $K$-means clustering and
+hierarchical clustering with the dendrogram cut to 4 clusters yield
+scientifically different results. Run the $K$-means algorithm with
+`nstart = 50` and
+by running `set.seed(123)` right before `kmeans()`. Use the `table()`
+function to compare the cluster output for each method. Only
+consider hierarchical clustering with complete-linkage for this
+question. (Be careful again with the label switching. Matched clusters 
+basically mean that, in the table, the rest of a row and column will be 0.)
+
+::: {.solbox data-latex=""}
+```{r q4-sol}
+set.seed(123)
+
+# some code
+
+```
+
+(some text)
+:::
+

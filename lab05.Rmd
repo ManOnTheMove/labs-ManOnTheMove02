@@ -1,0 +1,151 @@
+---
+title: "Lab 05 - LDA"
+author: '[your name here]'
+date: "`r Sys.Date()`"
+---
+
+
+This week, we will perform LDA on the well-known `palmerpenguins` data set. 
+This data will 
+be used to classify observations into one of the three penguin species. We'll
+use only two of the predictors: `bill_length_mm` and `flipper_length_mm`.
+
+See the website for descriptions of the data and fun pictures of penguins:
+<https://allisonhorst.github.io/palmerpenguins/>.
+
+```{r data-processing, message=FALSE, warning=FALSE}
+library(MASS)
+library(tidyverse)
+theme_set(theme_bw())
+data("penguins", package = "palmerpenguins")
+penguins <- penguins |> 
+  dplyr::select(species, bill_length_mm, flipper_length_mm)
+```
+
+
+# Questions
+
+A classification problem has a discrete response. The objective is
+usually to obtain a rule for the classification of new observations into
+one of the categories. For predictors $\boldsymbol{X}$ and response
+(group) $G$ which has possible values of $1,2,\ldots,K$, we make use of
+the Bayes' rule to obtain the probability of group membership given
+$\boldsymbol{X}$:
+$$
+\mathbb{P}(G=i\ |\ \boldsymbol{X})=f_{\boldsymbol{X}|G}(\boldsymbol{x}\ |\ 
+G=i)\mathbb{P}(G=i)/f_{\boldsymbol{X}}(\boldsymbol{x})\propto 
+f_{\boldsymbol{X} G}(\boldsymbol{x}\ |\ G=i)\mathbb{P}(G=i),
+$$
+where $\mathbb{P}(G=i)$ is the prior probability of group membership.
+Assume the predictors are normally distributed given $G=i$, with
+constant covariance matrix for each $i$, i.e.,
+$\boldsymbol{X}\ |\ G=i\sim N(\boldsymbol{\mu}_{i},\boldsymbol{\Sigma})$.
+Then the boundaries between any two classes $j$ and $k$, i.e., the
+collection of $\boldsymbol{X}$ such that
+$\mathbb{P}(G=j\ |\ \boldsymbol{X})=\mathbb{P}(G=k\ |\ \boldsymbol{X})$, is
+linear (hence the name LDA). A new observation is classified into group
+$j$ if the estimated value of $\mathbb{P}(G=j\ |\ \boldsymbol{X})$ is the
+highest among the $K$ classes.
+
+To begin, examine the following plot:
+```{r, warning=FALSE}
+ggplot(penguins, aes(flipper_length_mm, bill_length_mm)) +
+  geom_point(aes(colour = species)) +
+  scale_colour_viridis_d()
+```
+
+
+
+**Q1** Do you think the assumption of equal covariance
+matrices in LDA is reasonable here? Explain.
+    
+**Hint**: The covariance matrix is related to the shape or
+distribution of the points on a scatterplot. 
+    
+::: {.solbox data-latex=""}
+
+(some text)
+
+:::
+
+**Q2** Conduct LDA with the function `lda` in package `MASS`.
+Obtain the class boundary and draw it in the plot below. 
+
+**Hint**: One way to plot the boundary is to first make class predictions on a 
+fine grid of bill and flipper lengths, and then plot these as dots in base `R` 
+with appropriate arguments (or `geom_raster()` in `{ggplot}`)
+
+::: {.solbox data-latex=""}
+```{r q2-solution, message = FALSE, warning=FALSE}
+
+# some code
+
+```
+
+:::
+
+**Q3** Suppose we have two new observations
+`flipper_length` = (190, 210) and `bill_length` = (43, 51).
+What are the estimated posterior probabilities of these penguins for each class?
+Which species do you predict them to be?
+
+**Note:** Use the "highest posterior probability" to make your class prediction.
+
+
+::: {.solbox data-latex=""}
+```{r q3-sol}
+
+# some code
+
+```
+
+:::
+
+
+**Q4**
+Suppose we change the flipper and bill lengths of two
+observations from each class (see the figure for the ones that moved. 
+Running LDA on this modified data set yields the
+boundary shown below. Why is it so different from the one in **Q2**,
+even though we are only moving a few points?
+
+```{r echo = FALSE, warning=FALSE}
+extras <- tribble(
+    ~ flipper_length_mm, ~ bill_length_mm, ~ species,
+    172, 59, "Gentoo",
+    173, 58, "Gentoo",
+    171, 52, "Adelie",
+    172, 50, "Adelie",
+    220, 35, "Chinstrap",
+    228, 33, "Chinstrap"
+)
+penguins_extra <- bind_rows(penguins, extras)
+dump <- c(186, 254, 99, 130, 340, 297)
+penguins_replaced <- penguins_extra[-dump, ]
+ldaobj2 <- lda(species ~ ., data = penguins_replaced)
+fine_grid <- map(penguins[, -1], ~ range(.x, na.rm = TRUE)) |>
+  map(~ seq(.x[1], .x[2], length.out = 100))
+fine_grid <- expand_grid(!!!fine_grid)
+fine_grid$pred_class2 <- predict(ldaobj2, newdata = fine_grid)$class
+
+
+ggplot(penguins_extra, aes(flipper_length_mm, bill_length_mm)) +
+  geom_raster(data = fine_grid, aes(fill = pred_class2), alpha = .3) +
+  geom_point(aes(colour = species)) +
+  scale_colour_viridis_d() +
+  scale_fill_viridis_d() +
+  annotate(
+    geom = "segment",  
+    arrow = arrow(),
+    color = "orange",
+    x = penguins_extra$flipper_length_mm[dump], 
+    y = penguins_extra$bill_length_mm[dump],
+    xend = extras$flipper_length_mm, 
+    yend = extras$bill_length_mm)
+```
+
+::: {.solbox data-latex=""}
+
+(some text)
+
+:::
