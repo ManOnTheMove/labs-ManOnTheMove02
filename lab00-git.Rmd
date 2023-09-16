@@ -170,6 +170,13 @@ dat <- tibble(
   y = 2 + 3 * x1 - x2 + rnorm(100)
 )
 
+
+lm_model <- lm(y ~ x1 + x2, data = dat)
+
+
+
+print(round(coef(lm_model), 2))
+
 ```
 
 Now, stage the `.Rmd`. Commit with the message "on the wrong branch" and push.
